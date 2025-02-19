@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ID Token & Authorization Code Extractor</title>
+    <script>
+        function extractTokens() {
+            let fullUrl = window.location.href;
+
+            // Find the last '#' in case there are multiple
+            let lastHashIndex = fullUrl.lastIndexOf("#");
+            let fragment = lastHashIndex !== -1 ? fullUrl.substring(lastHashIndex + 1) : "";
+
+            // Ensure the fragment does not contain another URL (remove 'https://localhost...')
+            if (fragment.startsWith("https")) {
+                let secondHashIndex = fragment.indexOf("#");
+                fragment = secondHashIndex !== -1 ? fragment.substring(secondHashIndex + 1) : "";
+            }
+
+            // Convert the fragment into key-value pairs
+            let params = new URLSearchParams(fragment);
+
+            // Extract ID Token, Authorization Code, and State
+            let idToken = params.get("id_token");
+            let authCode = params.get("code");
+            let state = params.get("state");
+
+            // Display extracted values
+            document.getElementById("fullUrl").value = fullUrl;
+            document.getElementById("fragment").value = "#" + fragment; // Show only the extracted fragment
+
+            document.getElementById("idToken").value = idToken ? idToken : "ID Token not found.";
+            document.getElementById("authCode").value = authCode ? authCode : "Authorization code not found.";
+            document.getElementById("state").textContent = state ? state : "State not found.";
+        }
+
+        // Run the function when the page loads
+        window.onload = extractTokens;
+    </script>
+</head>
+<body>
+    <h1>ID Token & Authorization Code Extractor</h1>
+
+    <p><strong>Full URL:</strong></p>
+    <textarea id="fullUrl" rows="2" cols="100" readonly></textarea>
+
+    <p><strong>Extracted Fragment:</strong></p>
+    <textarea id="fragment" rows="2" cols="100" readonly></textarea>
+
+    <p><strong>ID Token:</strong></p>
+    <textarea id="idToken" rows="8" cols="100" readonly></textarea>
+
+    <p><strong>Authorization Code:</strong></p>
+    <textarea id="authCode" rows="4" cols="100" readonly></textarea>
+
+    <p><strong>State Parameter:</strong> <span id="state"></span></p>
+
+    <p><em>Copy and use the values above as needed.</em></p>
+</body>
+</html>
