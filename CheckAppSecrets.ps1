@@ -1,14 +1,20 @@
 # Install the Microsoft.Graph module if not installed
-if (-not (Get-Module -ListAvailable -Name Microsoft.Graph)) {
-    Install-Module -Name Microsoft.Graph -Force -AllowClobber
+
+$RequiredModules = @("Microsoft.Graph.Authentication", "Microsoft.Graph.Applications")
+foreach ($module in $RequiredModules) {
+    if (-not (Get-Module -ListAvailable -Name $module)) {
+        Install-Module -Name $module -Force -AllowClobber
+    }
 }
 
-# Import the Microsoft.Graph module
-Import-Module Microsoft.Graph
+# Import the required modules
+foreach ($module in $RequiredModules) {
+    Import-Module $module
+}
 
 # Authenticate to Microsoft Graph
 
-    Connect-MgGraph -Scopes "Application.Read.All", "Directory.Read.All"
+    Connect-MgGraph -Scopes "Application.Read.All", "Directory.Read.All" 
 
 # Check if you're authenticated by attempting to retrieve a user object
 $context = Get-MgContext
@@ -68,3 +74,5 @@ foreach ($entry in $output) {
         Write-Host "$($entry.AppName) - Secret Active - $($entry.SecretExpiration)" -ForegroundColor Green
     }
 }
+
+Disconnect-MgGraph
